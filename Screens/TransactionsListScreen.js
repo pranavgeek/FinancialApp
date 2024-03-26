@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ECFFDC',
     borderRadius: 5,
     paddingVertical: 10,
-    width: '90%', // Adjust as needed
+    width: '90%',
   },
   transactionInfo: {
     flexDirection: 'row',

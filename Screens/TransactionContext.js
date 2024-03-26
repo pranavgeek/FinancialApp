@@ -11,7 +11,6 @@ export const TransactionProvider = ({ children }) => {
     { id: 4, name: 'Dessert', amount: 50.00, location: 'Richmond St.', date: 'Feb 19, 2024'},
     { id: 5, name: 'Startbucks', amount: 20.00, location: 'Dundas St.', date: 'Feb 14, 2024'},
     { id: 6, name: 'Tim Hortons', amount: 10.00, location: 'King St.', date: 'Jan 26, 2024'},
-    // Add more transactions as needed
   ]);
 
   return (

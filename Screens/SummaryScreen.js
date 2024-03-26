@@ -5,10 +5,8 @@ import { TransactionContext } from './TransactionContext';
 function SummaryScreen() {
   const { transactions } = useContext(TransactionContext);
 
-  // Calculate total expenses
   const totalExpenses = transactions.reduce((total, transaction) => total + parseFloat(transaction.amount), 0);
 
-  // Find highest and lowest spending
   let highestSpending = null;
   let lowestSpending = null;
 

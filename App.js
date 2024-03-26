@@ -18,14 +18,12 @@ export default function App() {
           tabBarIcon: ({ focused, color, size }) => {
             let iconComponent;
 
-            // Set icon name based on route name
             if (route.name === 'Transactions') {
               iconComponent = focused ? <FontAwesome6 name="money-bill-transfer" size={24} color="black" /> : <FontAwesome6 name="money-bill-transfer" size={24} color="black" />;
             } else if (route.name === 'Summary') {
               iconComponent = focused ? <MaterialIcons name="summarize" size={size} color={color} /> : <MaterialIcons name="summarize" size={size} color={color} />;
             }
 
-            // Return the icon component
             return iconComponent;
           },
         })}
