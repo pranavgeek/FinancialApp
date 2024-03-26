@@ -1,20 +1,64 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import TransactionsStack from './Screens/TransactionStack';
+import SummaryScreen from './Screens/SummaryScreen';
+import { MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome6 } from '@expo/vector-icons';
+import { TransactionProvider } from './Screens/TransactionContext';
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <TransactionProvider>
+        <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconComponent;
+
+            // Set icon name based on route name
+            if (route.name === 'Transactions') {
+              iconComponent = focused ? <FontAwesome6 name="money-bill-transfer" size={24} color="black" /> : <FontAwesome6 name="money-bill-transfer" size={24} color="black" />;
+            } else if (route.name === 'Summary') {
+              iconComponent = focused ? <MaterialIcons name="summarize" size={size} color={color} /> : <MaterialIcons name="summarize" size={size} color={color} />;
+            }
+
+            // Return the icon component
+            return iconComponent;
+          },
+        })}
+        tabBarOptions={{
+          activeTintColor: 'green',
+          inactiveTintColor: 'gray',
+        }}>
+          <Tab.Screen name="Transactions" component={TransactionsStack} options={{ 
+          headerLeft: null,
+          headerTitle: "Financial App",
+          headerStyle: {
+            backgroundColor: '#478778'
+          },
+          headerTitleStyle: {
+            color: 'white',
+            fontSize: 30,
+            marginLeft: -170
+          },
+          }}/>
+          <Tab.Screen name="Summary" component={SummaryScreen} options={{ 
+          headerLeft: null,
+          headerTitle: "Financial App",
+          headerStyle: {
+            backgroundColor: '#478778'
+          },
+          headerTitleStyle: {
+            color: 'white',
+            fontSize: 30,
+            marginLeft: -170
+          },
+          }}/>
+        </Tab.Navigator>
+      </TransactionProvider>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
