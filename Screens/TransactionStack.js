@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from "@react-navigation/stack";
 import TransactionsListScreen from "./TransactionsListScreen";
 import TransactionDetailScreen from "./TransactionDetailScreen";
+import AddTransactionScreen from "./AddTransactionScreen"
 
 const Stack = createStackNavigator();
 
@@ -34,6 +35,25 @@ function TransactionsStack() {
       <Stack.Screen
         name="Transaction Detail"
         component={TransactionDetailScreen}
+        options={{
+          headerStyle: {
+            backgroundColor: "transparent",
+          },
+          headerTitleStyle: {
+            paddingTop: 25,
+            color: "black",
+            fontSize: 20,
+            marginLeft: -125,
+          },
+          headerBackTitleVisible: false,
+          headerLeft: (props) => (
+            <CustomBackButton onPress={props.onPress} />
+          ),
+        }}
+      />
+       <Stack.Screen
+        name="Add Transaction"
+        component={AddTransactionScreen}
         options={{
           headerStyle: {
             backgroundColor: "transparent",

@@ -1,10 +1,28 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { TransactionContext } from './TransactionContext';
+import { useFocusEffect } from '@react-navigation/native';
+import { fetchTransactions } from '../firebase';
 
 function TransactionsListScreen({ navigation }) {
-  const { transactions } = useContext(TransactionContext);
+  const [transactions, setTransactions] = useState([]);
 
+  const loadTransactions = async () => {
+    const transactionsList = await fetchTransactions();
+    setTransactions(transactionsList);
+  };
+
+  useEffect(() => {
+    loadTransactions();
+  }, []);
+
+  useFocusEffect(() => {
+    loadTransactions();
+  });
+  
+  const handleAddTransaction = () => {
+    navigation.navigate('Add Transaction');
+  };
+  
   return (
     <View style={styles.container}>
       {transactions.map(transaction => (
@@ -22,10 +40,12 @@ function TransactionsListScreen({ navigation }) {
           </View>
         </TouchableOpacity>
       ))}
+      <TouchableOpacity style={styles.addButton} onPress={handleAddTransaction}>
+        <Text style={styles.addButtonText}>+</Text>
+      </TouchableOpacity>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -59,9 +79,27 @@ const styles = StyleSheet.create({
   },
   amount: {
     marginRight: 10,
+    fontSize: 16,
   },
   arrow: {
     fontSize: 18,
+  },
+  addButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: 'green',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3,
+  },
+  addButtonText: {
+    fontSize: 24,
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 

@@ -1,27 +1,55 @@
-import React, { useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { TransactionContext } from './TransactionContext';
+import { firestore } from '../firebase';
+import { useFocusEffect } from '@react-navigation/native';
+import { collection, getDocs } from 'firebase/firestore';
 
 function SummaryScreen() {
-  const { transactions } = useContext(TransactionContext);
+  const [transactions, setTransactions] = useState([]);
+  const [totalExpenses, setTotalExpenses] = useState(0);
+  const [highestSpending, setHighestSpending] = useState(null);
+  const [lowestSpending, setLowestSpending] = useState(null);
 
-  const totalExpenses = transactions.reduce((total, transaction) => total + parseFloat(transaction.amount), 0);
+  const fetchTransactions = async () => {
+    try {
+      const transactionsCollection = collection(firestore, 'transactions')
+      const querySnapshot = await getDocs(transactionsCollection);
 
-  let highestSpending = null;
-  let lowestSpending = null;
+      const transactionsList = [];
+      let highest = null;
+      let lowest = null;
+      let total = 0;
 
-  transactions.forEach(transaction => {
-    const amount = parseFloat(transaction.amount);
+      querySnapshot.forEach((doc) => {
+        const transactionData = doc.data();
+        const amount = parseFloat(transactionData.amount);
+        transactionsList.push({ id: doc.id, ...transactionData });
+        total += amount;
 
-    if (!highestSpending || amount > highestSpending.amount) {
-      highestSpending = transaction;
-      highestSpending.amount = amount;
+        if (!highest || amount > parseFloat(highest.amount)) {
+          highest = { id: doc.id, ...transactionData };
+        }
+
+        if (!lowest || amount < parseFloat(lowest.amount)) {
+          lowest = { id: doc.id, ...transactionData };
+        }
+      });
+
+      setTransactions(transactionsList);
+      setTotalExpenses(total);
+      setHighestSpending(highest);
+      setLowestSpending(lowest);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
     }
+  };
 
-    if (!lowestSpending || amount < lowestSpending.amount) {
-      lowestSpending = transaction;
-      lowestSpending.amount = amount;
-    }
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  useFocusEffect(() => {
+    fetchTransactions();
   });
 
   return (
@@ -35,21 +63,21 @@ function SummaryScreen() {
         <View style={styles.horizontalLine} />
         <View style={styles.row}>
           <Text style={styles.label}>Total Expenses:</Text>
-          <Text style={styles.totalamount}>${totalExpenses.toFixed(2)}</Text>
+          <Text style={styles.totalamount}>${totalExpenses}</Text>
         </View>
         <View style={styles.horizontalLine} />
         <View style={styles.row}>
           <Text style={styles.label}>Highest Spending:</Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.amount}>{highestSpending ? `${highestSpending.name}: $${highestSpending.amount.toFixed(2)}` : '-'}</Text>
+          <Text style={styles.amount}>{highestSpending ? `${highestSpending.name}: $${highestSpending.amount}` : '-'}</Text>
         </View>
         <View style={styles.horizontalLine} />
         <View style={styles.row}>
           <Text style={styles.label}>Lowest Spending:</Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.amount}>{lowestSpending ? `${lowestSpending.name}: $${lowestSpending.amount.toFixed(2)}` : '-'}</Text>
+          <Text style={styles.amount}>{lowestSpending ? `${lowestSpending.name}: $${lowestSpending.amount}` : '-'}</Text>
         </View>
       </View>
     </View>
@@ -96,8 +124,8 @@ const styles = StyleSheet.create({
   },
   amount: {
     fontSize: 18,
+    marginTop: 5,
     fontWeight: '800',
-    padding: 10
   },
 });
 

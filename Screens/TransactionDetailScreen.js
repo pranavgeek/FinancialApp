@@ -1,27 +1,55 @@
-import React, { useContext } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { TransactionContext } from "./TransactionContext";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { fetchTransactiondetails, firestore } from "../firebase";
+import { deleteDoc, doc } from 'firebase/firestore';
 
-function TransactionDetailScreen({ route }) {
-  const { transactions } = useContext(TransactionContext);
+function TransactionDetailScreen({ route, navigation }) {
   const { transactionId } = route.params;
-  const transaction = transactions.find(
-    (transaction) => transaction.id === transactionId
-  );
+  const [transaction, setTransaction] = useState(null);
+
+  useEffect(() => {
+    const loadTransaction = async () => {
+      const transactionData = await fetchTransactiondetails(transactionId);
+      setTransaction(transactionData);
+    };
+
+    loadTransaction();
+  }, [transactionId]);
+
+  const handleDeleteTransaction = async () => {
+    try {
+      const transactionRef = doc(firestore, 'transactions', transactionId);
+      await deleteDoc(transactionRef);
+      console.log("Transaction deleted successfully");
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error deleting transaction:", error);
+      Alert.alert("Error", "Failed to delete transaction. Please try again.");
+    }
+  };
+
+  if (!transaction) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {transaction && (
-        <View style={styles.detailsContainer}>
-          <Text style={styles.amount}>${transaction.amount}</Text>
-          <Text style={styles.title}>{transaction.name}</Text>
-          <Text style={styles.location}>{transaction.location}</Text>
-        </View>
-      )}
+      <View style={styles.detailsContainer}>
+        <Text style={styles.amount}>${transaction.amount}</Text>
+        <Text style={styles.title}>{transaction.name}</Text>
+        <Text style={styles.location}>{transaction.location}</Text>
+      </View>
       <View style={styles.row}>
-        <Text style={styles.date}>Transaction date: </Text>
+        <Text style={styles.date}>Transaction date:</Text>
         <Text style={styles.date}>{transaction.date}</Text>
       </View>
+      <TouchableOpacity style={styles.rvBtn} onPress={handleDeleteTransaction}>
+        <Text style={styles.rvBtnText}>Remove</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -63,6 +91,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#666",
     marginTop: 10,
+  },
+  rvBtn: {
+    backgroundColor: "red",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignSelf: "center",
+    marginTop: 20,
+    borderWidth: 2,
+    borderColor: "#ECFFDC",
+  },
+  rvBtnText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ECFFDC',
   },
 });
 

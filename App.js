@@ -5,14 +5,12 @@ import TransactionsStack from './Screens/TransactionStack';
 import SummaryScreen from './Screens/SummaryScreen';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { TransactionProvider } from './Screens/TransactionContext';
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <TransactionProvider>
         <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -26,11 +24,9 @@ export default function App() {
 
             return iconComponent;
           },
-        })}
-        tabBarOptions={{
           activeTintColor: 'green',
           inactiveTintColor: 'gray',
-        }}>
+        })}>
           <Tab.Screen name="Transactions" component={TransactionsStack} options={{ 
           headerLeft: null,
           headerTitle: "Financial App",
@@ -56,7 +52,6 @@ export default function App() {
           },
           }}/>
         </Tab.Navigator>
-      </TransactionProvider>
     </NavigationContainer>
   );
 }
