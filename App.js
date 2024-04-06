@@ -38,6 +38,7 @@ export default function App() {
             fontSize: 30,
             marginLeft: -170
           },
+          unmountOnBlur: false
           }}/>
           <Tab.Screen name="Summary" component={SummaryScreen} options={{ 
           headerLeft: null,
@@ -50,6 +51,7 @@ export default function App() {
             fontSize: 30,
             marginLeft: -170
           },
+          lazy: true, unmountOnBlur: true
           }}/>
         </Tab.Navigator>
     </NavigationContainer>
